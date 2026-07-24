@@ -1,0 +1,21 @@
+authorize {
+    filter_username
+    preprocess
+    
+    # Executa a busca SQL no MySQL
+    sql
+
+    # Garante a autenticação via MAC (MAC-Auth)
+    pap
+}
+
+authenticate {
+    Auth-Type PAP {
+        pap
+    }
+}
+
+post-auth {
+    # Registra no log do SQL após autenticar
+    sql
+}

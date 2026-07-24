@@ -23,7 +23,6 @@ class VisitanteWifiController extends Controller
 
     public function create(Request $request)
     {
-
         $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
         if (!in_array($request->ip(), $permitidos, true)) {
             abort(403);

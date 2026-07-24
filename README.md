@@ -65,6 +65,8 @@ docker exec wifi php artisan migrate
 
 Exemplo de URL de teste: http://127.0.0.1:8000/solicitar?client_mac=d8:84:8c:10:88:10
 
+
+docker exec -it wifi_freeradius radtest -t pap "C4D0E371976A" "C4D0E371976A" localhost 0 MinhaChaveSecretRADIUS
 ```
 
 Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)

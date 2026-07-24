@@ -66,6 +66,22 @@ services:
     networks:
       - wifi-network
 
+  freeradius:
+    image: freeradius/freeradius-server:latest
+    container_name: wifi_freeradius
+    restart: always
+    ports:
+      - "1812:1812/udp"
+      - "1813:1813/udp"
+    volumes:
+      # Injeção dos arquivos de configuração customizados
+      - ./freeradius/clients.conf:/etc/freeradius/clients.conf:ro
+      - ./freeradius/sql.conf:/etc/freeradius/mods-available/sql:ro
+      - ./freeradius/queries.conf:/etc/freeradius/mods-config/sql/main/mysql/queries.conf:ro
+      - ./freeradius/sites-enabled/default:/etc/freeradius/sites-enabled/default:ro
+    depends_on:
+      - mariadb
+
 networks:
   wifi-network:
 
