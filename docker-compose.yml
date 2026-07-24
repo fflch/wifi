@@ -1,0 +1,73 @@
+services:
+  wifi:
+    build: .
+    image: wifi:latest
+    container_name: wifi
+    ports:
+      - "8000:80"
+    depends_on:
+      - mariadb
+    networks:
+      - wifi-network
+    volumes:
+      - ./:/var/www/html
+    environment:
+      HOME: /tmp
+    user: "${UID:-1000}:${GID:-1000}"
+
+  mariadb:
+    image: mariadb:11
+    container_name: wifi_mariadb
+    restart: always
+    environment:
+      MYSQL_DATABASE: wifi
+      MYSQL_USER: wifi
+      MYSQL_PASSWORD: wifi
+      MYSQL_ROOT_PASSWORD: wifi
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - wifi-network
+
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: wifi_selenium
+    ports:
+      - "7900:7900" # VNC (pra ver o browser rodando)
+    networks:
+      - wifi-network
+    shm_size: 2gb
+  
+  senhaunica-faker:
+    image: uspdev/senhaunica-faker
+    container_name: wifi_senhaunica-faker
+    ports:
+      - "3141:3141"
+    environment:
+          - APP_URL=http://auth.local:3141
+    networks:
+      wifi-network:
+        aliases:
+          - auth.local
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: wifi_phpmyadmin
+    restart: always
+    depends_on:
+      - mariadb
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: wifi
+    networks:
+      - wifi-network
+
+networks:
+  wifi-network:
+
+volumes:
+  mariadb_data:

@@ -1,0 +1,41 @@
+/* Avatar initials circle */
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.avatar-lg {
+    width: 80px;
+    height: 80px;
+}
+
+/* Protocol monospace */
+.protocol-id {
+    font-family: monospace;
+    font-size: 1.25rem;
+}
+
+/* Table cell max-width */
+.text-cell-limited {
+    max-width: 250px;
+}
+
+.text-cell-limited-lg {
+    max-width: 200px;
+}
+
+/* Inline form gap */
+.action-group {
+    gap: 0.5rem;
+}
+
+.action-group form {
+    gap: 0.25rem;
+}
+
+/* Auto-width select */
+.select-auto {
+    width: auto;
+}

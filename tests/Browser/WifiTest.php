@@ -1,0 +1,116 @@
+<?php
+
+namespace Tests\Browser;
+
+use App\Models\User;
+use App\Models\Visitor;
+use App\Models\WifiRequest;
+use App\Enums\WifiRequestStatus;
+use Laravel\Dusk\Browser;
+use Tests\DuskTestCase;
+
+class WifiTest extends DuskTestCase
+{
+    public function test_visitante_pode_solicitar_acesso(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit("/solicitar")
+                ->assertSee("Acesso à Rede Wi-Fi Visitante")
+                ->type("name", "Maria Silva")
+                ->type("email", "maria@exemplo.com")
+                ->type("document", "123.456.789-00")
+                ->type("phone", "(11) 99999-8888")
+                ->type("reason", "Visita à biblioteca para pesquisa acadêmica")
+                ->press("Enviar Solicitação")
+                ->waitUntil("return window.location.href.includes(\"/sucesso/\")", 15)
+                ->assertSee("Solicitação Recebida!");
+        });
+    }
+
+    public function test_patrocinador_pode_aprovar_solicitacao(): void
+    {
+        $visitor = Visitor::factory()->create();
+        WifiRequest::factory()->create([
+            "visitor_id" => $visitor->id,
+        ]);
+
+        $user = User::factory()->create(["codpes" => 1]);
+
+        $this->browse(function (Browser $browser) use ($user, $visitor) {
+            $browser->loginAs($user)
+                ->visit("/aprovacoes")
+                ->assertSee($visitor->name);
+
+            $browser->script("window.confirm = function() { return true; }");
+            $browser->press("APROVAR")
+                ->waitForText("Acesso liberado", 15);
+        });
+    }
+
+    public function test_patrocinador_pode_rejeitar_solicitacao(): void
+    {
+        $visitor = Visitor::factory()->create();
+        WifiRequest::factory()->create([
+            "visitor_id" => $visitor->id,
+        ]);
+
+        $user = User::factory()->create(["codpes" => 1]);
+
+        $this->browse(function (Browser $browser) use ($user, $visitor) {
+            $browser->loginAs($user)
+                ->visit("/aprovacoes")
+                ->assertSee($visitor->name);
+
+            $browser->script("window.confirm = function() { return true; }");
+            $browser->press("REJEITAR")
+                ->waitForText("rejeitada", 15);
+        });
+    }
+
+    public function test_dashboard_exibe_estatisticas(): void
+    {
+        $user = User::factory()->create(["codpes" => 1]);
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit("/dashboard")
+                ->assertSee("Painel de Controle")
+                ->assertSee("PENDENTES")
+                ->assertSee("APROVADOS")
+                ->assertSee("REJEITADOS");
+        });
+    }
+
+    public function test_visitante_nao_pode_acessar_dashboard(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->logout()
+                ->visit("/dashboard")
+                ->assertPathIs("/login");
+        });
+    }
+
+    public function test_historico_exibe_solicitacoes_finalizadas(): void
+    {
+        $visitor = Visitor::factory()->create();
+        WifiRequest::factory()->create([
+            "visitor_id" => $visitor->id,
+            "status" => WifiRequestStatus::APPROVED,
+        ]);
+        WifiRequest::factory()->create([
+            "visitor_id" => $visitor->id,
+            "status" => WifiRequestStatus::REJECTED,
+        ]);
+
+        $user = User::factory()->create(["codpes" => 1]);
+
+        $this->browse(function (Browser $browser) use ($user) {
+            $browser->loginAs($user)
+                ->visit("/aprovacoes/finalizadas")
+                ->assertSee("Histórico de Solicitações")
+                ->assertSee("TOTAL FINALIZADAS")
+                ->assertSee("APROVADOS")
+                ->assertSee("REJEITADOS");
+        });
+    }
+}
