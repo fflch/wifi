@@ -20,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // força https na produção
+        if (\App::environment('production')) {
+            \URL::forceScheme('https');
+        }
+
         RateLimiter::for('solicitacao-wifi', function (Request $request) {
             if (config('app.debug')) {
                 return Limit::perMinute(1000)->by($request->ip());
@@ -44,5 +49,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('visitante', function ($user = null) {
             return $user === null;
         });
+
+
     }
 }
