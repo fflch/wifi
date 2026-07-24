@@ -24,7 +24,8 @@ class VisitanteWifiController extends Controller
     public function create(Request $request)
     {
 
-        if (!$this->ipInRange($request->ip(), env('IP_PERMITIDO'))) {
+        $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
+        if (!in_array($request->ip(), $permitidos, true)) {
             abort(403);
         }
 
@@ -69,7 +70,8 @@ class VisitanteWifiController extends Controller
     public function store(SolicitarWifiRequest $request): RedirectResponse
     {
 
-        if (!$this->ipInRange($request->ip(), env('IP_PERMITIDO'))) {
+        $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
+        if (!in_array($request->ip(), $permitidos, true)) {
             abort(403);
         }
 
