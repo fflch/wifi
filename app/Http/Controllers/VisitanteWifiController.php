@@ -24,6 +24,10 @@ class VisitanteWifiController extends Controller
     public function create(Request $request)
     {
 
+        if (!$this->ipInRange($request->ip(), env('IP_PERMITIDO'))) {
+            abort(403);
+        }
+
         $validator = Validator::make($request->all(), [
             'client_mac' => ['required', 'mac_address'],
         ]);
@@ -64,6 +68,11 @@ class VisitanteWifiController extends Controller
 
     public function store(SolicitarWifiRequest $request): RedirectResponse
     {
+
+        if (!$this->ipInRange($request->ip(), env('IP_PERMITIDO'))) {
+            abort(403);
+        }
+
         $dados = $request->validated();
 
         $wifiRequest = $this->wifiService->solicitarAcesso(
