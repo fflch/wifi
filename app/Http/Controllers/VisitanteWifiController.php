@@ -23,9 +23,11 @@ class VisitanteWifiController extends Controller
 
     public function create(Request $request)
     {
-        $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
-        if (!in_array($request->ip(), $permitidos, true)) {
-            abort(403);
+        if (!app()->environment('local')) {
+            $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
+            if (!in_array($request->ip(), $permitidos, true)) {
+                abort(403);
+            }
         }
 
         $validator = Validator::make($request->all(), [
@@ -68,10 +70,11 @@ class VisitanteWifiController extends Controller
 
     public function store(SolicitarWifiRequest $request): RedirectResponse
     {
-
-        $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
-        if (!in_array($request->ip(), $permitidos, true)) {
-            abort(403);
+        if (!app()->environment('local')) {
+            $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
+            if (!in_array($request->ip(), $permitidos, true)) {
+                abort(403);
+            }
         }
 
         $dados = $request->validated();
