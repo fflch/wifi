@@ -23,12 +23,6 @@ class VisitanteWifiController extends Controller
 
     public function create(Request $request)
     {
-        if (!app()->environment('local')) {
-            $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
-            if (!in_array($request->ip(), $permitidos, true)) {
-                abort(403);
-            }
-        }
 
         $validator = Validator::make($request->all(), [
             'client_mac' => ['required', 'mac_address'],
@@ -70,12 +64,6 @@ class VisitanteWifiController extends Controller
 
     public function store(SolicitarWifiRequest $request): RedirectResponse
     {
-        if (!app()->environment('local')) {
-            $permitidos = array_map('trim', explode(',', env('IP_PERMITIDOS')));
-            if (!in_array($request->ip(), $permitidos, true)) {
-                abort(403);
-            }
-        }
 
         $dados = $request->validated();
 
