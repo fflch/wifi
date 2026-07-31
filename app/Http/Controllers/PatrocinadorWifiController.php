@@ -56,11 +56,16 @@ class PatrocinadorWifiController extends Controller
         ], $stats));
     }
 
-    public function finalizadas(Request $request): View
+    public function minhasAprovacoes(Request $request): View
     {
         $search = $request->query('search');
-        $query = WifiRequest::where('status', '!=', WifiRequestStatus::PENDING)
-            ->with(['visitor', 'approver'])
+        $user = auth()->user();
+
+        $query = WifiRequest::where(function ($q) use ($user) {
+                $q->where('approved_by', $user->id)
+                  ->orWhere('rejected_by', $user->id);
+            })
+            ->with(['visitor', 'approver', 'rejecter'])
             ->latest();
 
         if ($search) {
@@ -72,10 +77,9 @@ class PatrocinadorWifiController extends Controller
             });
         }
 
-        $pedidosFinalizados = $query->paginate(15)->withQueryString();
-        $stats = $this->padStats($this->wifiService->getFullStats());
+        $minhasAprovacoes = $query->paginate(15)->withQueryString();
 
-        return view('wifi.patrocinador.finalizadas', compact('pedidosFinalizados', 'stats', 'search'));
+        return view('wifi.patrocinador.minhas-aprovacoes', compact('minhasAprovacoes', 'search'));
     }
 
     public function aprovar(Request $request, WifiRequest $wifiRequest): RedirectResponse
@@ -85,7 +89,6 @@ class PatrocinadorWifiController extends Controller
         $this->wifiService->aprovarAcesso(
             requestId: $wifiRequest->id,
             patrocinador: auth()->user(),
-            horasValidade: (int) $request->input('horas', 12)
         );
 
         return back()->with('alert-success', 'Acesso liberado e enviado para a controladora Wi-Fi.');
@@ -98,5 +101,14 @@ class PatrocinadorWifiController extends Controller
         $this->wifiService->rejeitarAcesso($wifiRequest->id, auth()->user());
 
         return back()->with('alert-info', 'Solicitação de acesso rejeitada.');
+    }
+
+    public function rejeitarAprovado(WifiRequest $wifiRequest): RedirectResponse
+    {
+        $this->authorize('gerenciar', $wifiRequest);
+
+        $this->wifiService->rejeitarAprovado($wifiRequest->id, auth()->user());
+
+        return back()->with('alert-info', 'Aprovação revogada. A solicitação foi rejeitada.');
     }
 }

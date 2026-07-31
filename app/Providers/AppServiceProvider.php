@@ -20,7 +20,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // força https na produção
         if (\App::environment('production')) {
             \URL::forceScheme('https');
         }
@@ -42,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
         WifiRequest::observe(WifiRequestObserver::class);
 
         Gate::define('patrocinador', function ($user) {
+            if ($user->hasPermissionTo('Servidor')) {
+                return true;
+            }
+
             $admins = config('senhaunica.admins', []);
             return in_array((string) $user->codpes, $admins, strict: true);
         });
@@ -49,7 +52,5 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('visitante', function ($user = null) {
             return $user === null;
         });
-
-
     }
 }

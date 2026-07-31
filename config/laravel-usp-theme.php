@@ -12,8 +12,8 @@ $menu = [
         'can' => 'patrocinador',
     ],
     [
-        'text' => '<i class="fas fa-history"></i> Histórico',
-        'url' => '/aprovacoes/finalizadas',
+        'text' => '<i class="fas fa-history"></i> Minhas Aprovações',
+        'url' => '/aprovacoes/minhas-aprovacoes',
         'can' => 'patrocinador',
     ],
 ];

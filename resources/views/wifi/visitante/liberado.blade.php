@@ -22,18 +22,6 @@
                     <strong class="text-primary">{{ $client_mac }}</strong>
                 </div>
 
-                @if($expires_at ?? null)
-                    <p class="text-muted mb-4">
-                        <i class="fas fa-clock text-primary"></i>
-                        Acesso válido até <strong>{{ $expires_at->format('d/m/Y H:i') }}</strong>.
-                    </p>
-                @else
-                    <p class="text-muted mb-4">
-                        <i class="fas fa-clock text-primary"></i>
-                        Acesso sem expiração definida.
-                    </p>
-                @endif
-
                 <div>
                     <p class="text-muted small">
                         <i class="fas fa-shield-alt text-primary"></i>

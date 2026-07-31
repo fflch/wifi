@@ -25,9 +25,10 @@ Route::middleware(['auth', 'patrocinador'])->name('wifi.patrocinador.')->group(f
 
     Route::prefix('aprovacoes')->group(function () {
         Route::get('/', [PatrocinadorWifiController::class, 'index'])->name('index');
-        Route::get('/finalizadas', [PatrocinadorWifiController::class, 'finalizadas'])->name('finalizadas');
+        Route::get('/minhas-aprovacoes', [PatrocinadorWifiController::class, 'minhasAprovacoes'])->name('minhas-aprovacoes');
         Route::post('/{wifiRequest}/aprovar', [PatrocinadorWifiController::class, 'aprovar'])->name('aprovar');
         Route::patch('/{wifiRequest}/rejeitar', [PatrocinadorWifiController::class, 'rejeitar'])->name('rejeitar');
+        Route::patch('/{wifiRequest}/rejeitar-aprovado', [PatrocinadorWifiController::class, 'rejeitarAprovado'])->name('rejeitar-aprovado');
     });
 });
 

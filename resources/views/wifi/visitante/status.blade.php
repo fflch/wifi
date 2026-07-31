@@ -56,11 +56,6 @@
                     <p class="text-success mb-1">
                         <i class="fas fa-check-circle"></i> Seu acesso foi aprovado!
                     </p>
-                    @if($wifiRequest->expires_at)
-                        <p class="text-muted small">
-                            <i class="fas fa-clock"></i> Válido até <strong>{{ $wifiRequest->expires_at->format('d/m/Y H:i') }}</strong>.
-                        </p>
-                    @endif
                     <p class="text-muted small">
                         Conecte-se à rede Wi-Fi visitante para começar a navegar.
                     </p>
@@ -68,6 +63,11 @@
                     <p class="text-danger mb-1">
                         <i class="fas fa-times-circle"></i> Sua solicitação foi rejeitada.
                     </p>
+                    @if($wifiRequest->rejecter)
+                        <p class="text-muted small">
+                            Rejeitada por: <strong>{{ $wifiRequest->rejecter->name }}</strong>
+                        </p>
+                    @endif
                     <p class="text-muted small">
                         Para mais informações, entre em contato com a administração.
                     </p>
@@ -86,9 +86,6 @@
                             <i class="fas fa-sync-alt mr-1"></i> ATUALIZAR
                         </a>
                     @endif
-                    <a href="{{ route('wifi.visitante.create', ['client_mac' => $wifiRequest->visitor->client_mac ?? '']) }}" class="btn btn-link">
-                        <i class="fas fa-arrow-left"></i> VOLTAR AO INÍCIO
-                    </a>
                 </div>
             </div>
         </div>
