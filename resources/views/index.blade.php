@@ -47,19 +47,6 @@
                 <div class="card feature-card h-100 text-center">
                     <div class="card-body d-flex flex-column align-items-center py-5">
                         <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4 avatar-circle" style="background-color: #273e74 !important;">
-                            <i class="fas fa-user-plus fa-lg"></i>
-                        </div>
-                        <h5 class="font-weight-bold">Solicitar Acesso</h5>
-                        <p class="text-muted mb-4">Solicite acesso à rede Wi-Fi de visitantes informando seus dados e o dispositivo que será utilizado.</p>
-                        <a href="{{ route('wifi.visitante.create') }}" class="btn btn-primary mt-auto px-4 font-weight-bold">SOLICITAR</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6 mb-4">
-                <div class="card feature-card h-100 text-center">
-                    <div class="card-body d-flex flex-column align-items-center py-5">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-4 avatar-circle" style="background-color: #273e74 !important;">
                             <i class="fas fa-check-circle fa-lg"></i>
                         </div>
                         <h5 class="font-weight-bold">Aprovações</h5>

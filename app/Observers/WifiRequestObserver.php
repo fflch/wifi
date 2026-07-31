@@ -24,7 +24,6 @@ class WifiRequestObserver
                 'payload' => [
                     'old_status' => $oldStatus instanceof WifiRequestStatus ? $oldStatus->value : $oldStatus,
                     'new_status' => $wifiRequest->status->value,
-                    'expires_at' => $wifiRequest->expires_at?->toIso8601String(),
                 ],
                 'ip_address' => request()->ip(),
                 'user_agent' => request()->userAgent(),
