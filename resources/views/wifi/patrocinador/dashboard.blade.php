@@ -64,9 +64,9 @@
             <div class="card text-center h-100">
                 <div class="card-body">
                     <i class="fas fa-history fa-3x text-secondary mb-3"></i>
-                    <h5 class="font-weight-bold">Histórico de Acessos</h5>
-                    <p class="text-muted">Consulte registros de solicitações já processadas e suas validades.</p>
-                    <a href="{{ route('wifi.patrocinador.finalizadas') }}" class="btn btn-outline-secondary">Ver Finalizadas</a>
+                    <h5 class="font-weight-bold">Minhas Aprovações</h5>
+                    <p class="text-muted">Consulte solicitações que você aprovou ou rejeitou.</p>
+                    <a href="{{ route('wifi.patrocinador.minhas-aprovacoes') }}" class="btn btn-outline-secondary">Ver Minhas Aprovações</a>
                 </div>
             </div>
         </div>

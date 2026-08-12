@@ -15,7 +15,7 @@ class CheckPatrocinador
         if (!Gate::allows('patrocinador')) {
             Auth::logout();
             $request->session()->regenerateToken();
-            return redirect('/solicitar')->with('alert-danger', 'Você não tem permissão para acessar o sistema.');
+            return redirect('/')->with('alert-danger', 'Você não tem permissão para acessar o sistema.');
         }
 
         return $next($request);

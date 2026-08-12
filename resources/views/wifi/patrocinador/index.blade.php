@@ -100,12 +100,6 @@
                                 <div class="d-flex align-items-center action-group">
                                     <form action="{{ route('wifi.patrocinador.aprovar', $pedido->id) }}" method="POST" class="d-flex align-items-center">
                                         @csrf
-                                        <select name="horas" class="form-control form-control-sm select-auto">
-                                            <option value="4">4h</option>
-                                            <option value="8">8h</option>
-                                            <option value="12" selected>12h</option>
-                                            <option value="24">24h</option>
-                                        </select>
                                         <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Confirmar liberação de acesso para {{ $pedido->visitor->name }}?')">APROVAR</button>
                                     </form>
                                     <form action="{{ route('wifi.patrocinador.rejeitar', $pedido->id) }}" method="POST">

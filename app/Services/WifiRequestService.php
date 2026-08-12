@@ -17,15 +17,24 @@ class WifiRequestService
     {
         $mac = MacAddress::normalize($dadosVisitante['client_mac'] ?? '');
 
-        $visitor = Visitor::updateOrCreate(
-            ['email' => $dadosVisitante['email']],
-            [
+        $visitor = Visitor::where('client_mac', $mac)->first();
+
+        if ($visitor) {
+            $visitor->update([
                 'name' => $dadosVisitante['name'],
+                'email' => $dadosVisitante['email'],
+                'document' => $dadosVisitante['document'],
+                'phone' => $dadosVisitante['phone'] ?? null,
+            ]);
+        } else {
+            $visitor = Visitor::create([
+                'name' => $dadosVisitante['name'],
+                'email' => $dadosVisitante['email'],
                 'document' => $dadosVisitante['document'],
                 'phone' => $dadosVisitante['phone'] ?? null,
                 'client_mac' => $mac,
-            ]
-        );
+            ]);
+        }
 
         $wifiRequest = WifiRequest::create([
             'visitor_id' => $visitor->id,
@@ -36,14 +45,15 @@ class WifiRequestService
         return $wifiRequest;
     }
 
-    public function aprovarAcesso(string $requestId, User $patrocinador, int $horasValidade = 12): WifiRequest
+    public function aprovarAcesso(string $requestId, User $patrocinador): WifiRequest
     {
         $wifiRequest = WifiRequest::findOrFail($requestId);
 
         $wifiRequest->update([
             'status' => WifiRequestStatus::APPROVED,
             'approved_by' => $patrocinador->id,
-            'expires_at' => Carbon::now()->addHours($horasValidade),
+            'rejected_by' => null,
+            'expires_at' => null,
         ]);
 
         return $wifiRequest;
@@ -55,7 +65,26 @@ class WifiRequestService
 
         $wifiRequest->update([
             'status' => WifiRequestStatus::REJECTED,
-            'approved_by' => $patrocinador->id,
+            'approved_by' => null,
+            'rejected_by' => $patrocinador->id,
+        ]);
+
+        return $wifiRequest;
+    }
+
+    public function rejeitarAprovado(string $requestId, User $patrocinador): WifiRequest
+    {
+        $wifiRequest = WifiRequest::findOrFail($requestId);
+
+        if ((int) $wifiRequest->approved_by !== (int) $patrocinador->id) {
+            abort(403, 'Você só pode revogar aprovações feitas por você.');
+        }
+
+        $wifiRequest->update([
+            'status' => WifiRequestStatus::REJECTED,
+            'approved_by' => null,
+            'rejected_by' => $patrocinador->id,
+            'expires_at' => null,
         ]);
 
         return $wifiRequest;
@@ -120,16 +149,11 @@ class WifiRequestService
     {
         $requests = WifiRequest::with('visitor')
             ->where('status', WifiRequestStatus::APPROVED)
-            ->where(function ($q) {
-                $q->whereNull('expires_at')
-                    ->orWhere('expires_at', '>', Carbon::now());
-            })
             ->get();
 
         return $requests->map(fn (WifiRequest $r) => [
             'mac' => $r->visitor->client_mac,
             'visitor' => $r->visitor->name,
-            'expires_at' => $r->expires_at?->toIso8601String(),
         ])->values()->toArray();
     }
 
@@ -145,13 +169,6 @@ class WifiRequestService
             'visitor' => $r->visitor->name,
             'requested_at' => $r->created_at->toIso8601String(),
         ])->values()->toArray();
-    }
-
-    public function expirarAprovados(): int
-    {
-        return WifiRequest::where('status', WifiRequestStatus::APPROVED)
-            ->where('expires_at', '<', Carbon::now())
-            ->update(['status' => WifiRequestStatus::EXPIRED->value]);
     }
 
     public function latestStatusForMac(string $mac): ?WifiRequest

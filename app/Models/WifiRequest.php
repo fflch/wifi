@@ -13,38 +13,38 @@ class WifiRequest extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use HasUlids; // Chave primária pública anti-IDOR
+    use HasUlids;
 
     protected $fillable = [
         'visitor_id',
         'reason',
         'status',
         'approved_by',
+        'rejected_by',
         'expires_at',
     ];
 
     protected function casts(): array
     {
         return [
-            'status' => WifiRequestStatus::class, // Cast automático para o Enum
+            'status' => WifiRequestStatus::class,
             'expires_at' => 'datetime',
         ];
     }
 
-    /**
-     * Relacionamento: A qual visitante esta solicitação pertence.
-     */
     public function visitor(): BelongsTo
     {
         return $this->belongsTo(Visitor::class);
     }
 
-    /**
-     * Relacionamento: Qual usuário (patrocinador) aprovou esta solicitação.
-     */
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function rejecter(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'rejected_by');
     }
 
     public function getBadgeClassAttribute(): string
