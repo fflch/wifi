@@ -66,6 +66,15 @@ services:
     networks:
       - wifi-network
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: wifi_mailpit
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Interface Web
+    networks:
+      - wifi-network
+
   freeradius:
     image: freeradius/freeradius-server:latest
     container_name: wifi_freeradius
