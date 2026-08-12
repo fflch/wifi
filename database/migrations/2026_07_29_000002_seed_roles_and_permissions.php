@@ -8,10 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Permission::firstOrCreate(['name' => 'aprovar wifi');
+        Permission::firstOrCreate(['name' => 'aprovar wifi']);
 
-        $servidor = Role::firstOrCreate(['name' => 'Servidor');
-        $servidorUsp = Role::firstOrCreate(['name' => 'ServidorUSP');
+        $servidor = Role::firstOrCreate(['name' => 'Servidor']);
+        $servidorUsp = Role::firstOrCreate(['name' => 'ServidorUSP']);
 
         $servidor->givePermissionTo('aprovar wifi');
     }

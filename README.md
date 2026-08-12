@@ -87,7 +87,6 @@ Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 | `SENHAUNICA_ADMINS` | Codpes dos patrocinadores (separados por `;`) | `16001;16002` |
 | `SENHAUNICA_CALLBACK` | Callback OAuth | `http://127.0.0.1:8000/callback` |
 | `WIFI_CONTROLLER_TOKEN` | Token da API da controladora | *(configurar em produção)* |
-| `WIFI_ACCESS_VALIDITY_HOURS` | Validade padrão do acesso (horas) | `12` |
 
 ---
 
