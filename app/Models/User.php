@@ -16,8 +16,6 @@ class User extends Authenticatable
     use HasSenhaunica;
     use HasRoles;
 
-    protected $guard_name = 'senhaunica';
-
     protected $fillable = [
         'name',
         'email',
