@@ -3,11 +3,8 @@
 namespace App\Providers;
 
 use App\Models\Solicitacao;
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use OwenIt\Auditing\Events\AuditCustom;
 use Spatie\ModelStatus\Events\StatusUpdated;
@@ -24,19 +21,6 @@ class AppServiceProvider extends ServiceProvider
         if (\App::environment('production')) {
             \URL::forceScheme('https');
         }
-
-        RateLimiter::for('solicitacao-wifi', function (Request $request) {
-            if (config('app.debug')) {
-                return Limit::perMinute(1000)->by($request->ip());
-            }
-
-            return Limit::perHour(3)->by($request->ip())
-                ->response(function () {
-                    return response()->view('errors.429', [
-                        'message' => 'Você excedeu o limite de solicitações. Tente novamente em uma hora.'
-                    ], 429);
-                });
-        });
 
         // Quem pode aprovar: servidores e docentes da unidade (gates do senhaunica-socialite)
         Gate::define('autorizador', function ($user) {

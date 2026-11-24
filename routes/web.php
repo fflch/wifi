@@ -9,7 +9,7 @@ Route::get('/', [IndexController::class, 'index']);
 
 // Visitante (captive portal, sem login)
 Route::get('/solicitar', [SolicitacaoController::class, 'create']);
-Route::post('/solicitar', [SolicitacaoController::class, 'store'])->middleware('throttle:solicitacao-wifi');
+Route::post('/solicitar', [SolicitacaoController::class, 'store']);
 Route::get('/solicitar/{solicitacao}', [SolicitacaoController::class, 'show']);
 
 // Autorizador (servidor ou docente na Senha Única)
