@@ -37,7 +37,7 @@ docker exec wifi php artisan migrate
 
 Exemplo de URL de teste: 
 
-    http://127.0.0.1:8000/solicitar?client_mac=d8:84:8c:10:88:10&NbiIP=10.10.10.10&ssid=fflch
+    http://127.0.0.1:8000/solicitar?client_mac=d8:84:8c:10:88:10&nbiIP=10.10.10.10&ssid=fflch
 
 Acesse: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
@@ -86,7 +86,7 @@ docker exec wifi_mariadb mariadb -uwifi -pwifi wifi -e 'SELECT * FROM radcheck'
 docker logs -f wifi_freeradius
 ```
 
-Teste completo: abra `http://127.0.0.1:8000/solicitar?client_mac=C4:D0:E3:71:97:6A&NbiIP=10.10.10.10&ssid=fflch`, rode o `radtest` (Reject),
+Teste completo: abra `http://127.0.0.1:8000/solicitar?client_mac=C4:D0:E3:71:97:6A&nbiIP=10.10.10.10&ssid=fflch`, rode o `radtest` (Reject),
 aprove em `/aprovacoes`, rode de novo (Accept), revogue e rode mais uma vez (Reject).
 
 > Use `127.0.0.1` e não `localhost` no radtest: `localhost` pode resolver para IPv6 (`::1`), que não está em `clients.conf`.
@@ -112,7 +112,7 @@ remova o `command: ["-X"]` do `docker-compose.yml` e, de preferência, use um us
 | `SENHAUNICA_CODIGO_UNIDADE` | Unidade(s) cujo vínculo vira `Servidor`; de outras unidades vira `Servidorusp` | `8` |
 | `SENHAUNICA_CALLBACK` | Callback OAuth | `http://127.0.0.1:8000/callback` |
 | `WIFI_SSID` | SSID aceito no parâmetro `ssid` do `/solicitar` | `fflch` |
-| `WIFI_NBI_IP` | IP da controladora aceito no parâmetro `NbiIP` do `/solicitar` | `10.10.10.10` |
+| `WIFI_NBI_IP` | IP da controladora aceito no parâmetro `nbiIP` do `/solicitar` | `10.10.10.10` |
 
 ---
 
@@ -121,7 +121,7 @@ remova o `command: ["-X"]` do `docker-compose.yml` e, de preferência, use um us
 ### Visitante
 
 1. Conecte-se à rede Wi-Fi da FFLCH
-2. O captive portal redireciona para `/solicitar?client_mac=XX:XX:XX:XX:XX:XX&NbiIP=<ip-controladora>&ssid=<ssid>`
+2. O captive portal redireciona para `/solicitar?client_mac=XX:XX:XX:XX:XX:XX&nbiIP=<ip-controladora>&ssid=<ssid>`
 3. Preencha o formulário com nome, e-mail, CPF/passaporte, telefone e motivo
 4. Acompanhe em `/solicitar/{protocolo}` (o protocolo é um ULID)
 5. Após aprovado, o acesso é liberado automaticamente

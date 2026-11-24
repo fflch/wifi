@@ -14,7 +14,8 @@ class SolicitacaoController extends Controller
 {
     /**
      * A controladora Wi-Fi redireciona o visitante para cá com
-     * ?client_mac=...&NbiIP=...&ssid=...
+     * ?client_mac=...&nbiIP=...&ssid=...
+     * (a Ruckus manda "nbiIP"; aceitamos também "NbiIP")
      */
     public function create(Request $request)
     {
@@ -24,7 +25,8 @@ class SolicitacaoController extends Controller
         if ($request->ssid != config('wifi.ssid')) {
             abort(403, 'SSID inválido.');
         }
-        if ($request->NbiIP != config('wifi.nbi_ip')) {
+        $nbiIp = $request->input('nbiIP', $request->input('NbiIP'));
+        if ($nbiIp != config('wifi.nbi_ip')) {
             abort(403, 'IP da controladora inválido.');
         }
 
