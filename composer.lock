@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56c18c70b682ef1b1e32e156df034893",
+    "content-hash": "01f0c05d6aee52bd78054f9fa06bb04a",
     "packages": [
         {
             "name": "brick/math",
@@ -7037,6 +7037,48 @@
             "time": "2025-12-02T11:56:42+00:00"
         },
         {
+            "name": "uspdev/cache",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/uspdev/cache.git",
+                "reference": "52f31d6664fb5aa7a8c4223a3f87826323b72815"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/uspdev/cache/zipball/52f31d6664fb5aa7a8c4223a3f87826323b72815",
+                "reference": "52f31d6664fb5aa7a8c4223a3f87826323b72815",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Uspdev\\Cache\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Masaki Kawabata Neto",
+                    "email": "masaki.kawabata@gmail.com"
+                }
+            ],
+            "description": "Library to connect to cache server",
+            "homepage": "https://github.com/uspdev/cache",
+            "support": {
+                "issues": "https://github.com/uspdev/cache/issues",
+                "source": "https://github.com/uspdev/cache/tree/1.1.0"
+            },
+            "time": "2026-11-10T18:15:00+00:00",
+            "published-time": "2026-11-10T18:15:42+00:00"
+        },
+        {
             "name": "uspdev/laravel-usp-theme",
             "version": "2.8.23",
             "source": {
@@ -7085,6 +7127,56 @@
                 "source": "https://github.com/uspdev/laravel-usp-theme/tree/2.8.23"
             },
             "time": "2025-12-04T17:51:35+00:00"
+        },
+        {
+            "name": "uspdev/replicado",
+            "version": "1.28.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/uspdev/replicado.git",
+                "reference": "aac9710f830fe2e58ccd0e720891a48ee5510378"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/uspdev/replicado/zipball/aac9710f830fe2e58ccd0e720891a48ee5510378",
+                "reference": "aac9710f830fe2e58ccd0e720891a48ee5510378",
+                "shasum": ""
+            },
+            "require": {
+                "ext-pdo_dblib": "*",
+                "illuminate/collections": "^8 || ^9 || ^10 || ^11 || ^12 || ^13",
+                "monolog/monolog": "^2 || ^3",
+                "php": "^7 || ^8",
+                "uspdev/cache": "^1"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "helpers/helpers.php"
+                ],
+                "psr-4": {
+                    "Uspdev\\Replicado\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Thiago Gomes Verissimo",
+                    "email": "thiago.verissimo@usp.br",
+                    "homepage": "https://github.com/thiagogomesverissimo"
+                }
+            ],
+            "description": "Classes PHP que consome dados do Replicado USP",
+            "homepage": "https://github.com/uspdev/replicado",
+            "support": {
+                "issues": "https://github.com/uspdev/replicado/issues",
+                "source": "https://github.com/uspdev/replicado/tree/1.28.9"
+            },
+            "time": "2026-11-06T12:19:27+00:00",
+            "published-time": "2026-11-06T12:20:38+00:00"
         },
         {
             "name": "uspdev/senhaunica-socialite",

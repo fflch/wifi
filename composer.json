@@ -12,6 +12,7 @@
         "owen-it/laravel-auditing": "^14.0",
         "spatie/laravel-model-status": "^1.20",
         "uspdev/laravel-usp-theme": "^2.8",
+        "uspdev/replicado": "^1.28",
         "uspdev/senhaunica-socialite": "^4.5"
     },
     "require-dev": {
