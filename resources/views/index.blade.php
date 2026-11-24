@@ -52,9 +52,9 @@
                         <h5 class="font-weight-bold">Aprovações</h5>
                         <p class="text-muted mb-4">Funcionários e docentes: gerencie as solicitações de acesso pendentes.</p>
                         @auth
-                            <a href="{{ route('wifi.patrocinador.index') }}" class="btn btn-primary mt-auto px-4 font-weight-bold">APROVAÇÕES</a>
+                            <a href="/aprovacoes" class="btn btn-primary mt-auto px-4 font-weight-bold">APROVAÇÕES</a>
                         @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary mt-auto px-4 font-weight-bold">ENTRAR</a>
+                            <a href="/login" class="btn btn-outline-primary mt-auto px-4 font-weight-bold">ENTRAR</a>
                         @endauth
                     </div>
                 </div>

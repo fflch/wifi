@@ -1,9 +1,8 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Uspdev\SenhaunicaSocialite\Traits\HasSenhaunica;
@@ -36,10 +35,10 @@ class User extends Authenticatable
     }
 
     /**
-     * Relacionamento: Um usuário (patrocinador) pode ter aprovado várias solicitações.
+     * Solicitações que este autorizador aprovou ou rejeitou
      */
-    public function approvedRequests(): HasMany
+    public function solicitacoes()
     {
-        return $this->hasMany(WifiRequest::class, 'approved_by');
+        return $this->hasMany(Solicitacao::class);
     }
 }

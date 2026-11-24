@@ -79,15 +79,23 @@ services:
     image: freeradius/freeradius-server:latest
     container_name: wifi_freeradius
     restart: always
+    # -X = modo debug (mostra cada requisição no log). Remova em produção.
+    command: ["-X"]
     ports:
       - "1812:1812/udp"
       - "1813:1813/udp"
-#    volumes:
-#     # Injeção dos arquivos de configuração customizados
-#      - ./freeradius/clients.conf:/etc/freeradius/clients.conf:ro
-#      - ./freeradius/sql.conf:/etc/freeradius/mods-available/sql:ro
-#      - ./freeradius/queries.conf:/etc/freeradius/mods-config/sql/main/mysql/queries.conf:ro
-#      - ./freeradius/sites-enabled/default:/etc/freeradius/sites-enabled/default:ro
+    environment:
+      RADIUS_SECRET: "MinhaChaveSecretRADIUS"
+      RADIUS_DB_HOST: mariadb
+      RADIUS_DB_NAME: wifi
+      RADIUS_DB_USER: wifi
+      RADIUS_DB_PASSWORD: wifi
+    volumes:
+      - ./freeradius/clients.conf:/etc/freeradius/clients.conf:ro
+      - ./freeradius/mods-enabled/sql:/etc/freeradius/mods-enabled/sql:ro
+      - ./freeradius/sites-enabled/default:/etc/freeradius/sites-enabled/default:ro
+    networks:
+      - wifi-network
     depends_on:
       - mariadb
 

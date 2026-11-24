@@ -2,19 +2,19 @@
 
 $menu = [
     [
-        'text' => '<i class="fas fa-chart-pie"></i> Dashboard',
-        'url' => '/dashboard',
-        'can' => 'patrocinador',
-    ],
-    [
         'text' => '<i class="fas fa-clock"></i> Aprovações Pendentes',
         'url' => '/aprovacoes',
-        'can' => 'patrocinador',
+        'can' => 'autorizador',
     ],
     [
         'text' => '<i class="fas fa-history"></i> Minhas Aprovações',
-        'url' => '/aprovacoes/minhas-aprovacoes',
-        'can' => 'patrocinador',
+        'url' => '/aprovacoes/minhas',
+        'can' => 'autorizador',
+    ],
+    [
+        'text' => '<i class="fas fa-list"></i> Todas as Solicitações',
+        'url' => '/aprovacoes/todas',
+        'can' => 'admin',
     ],
 ];
 

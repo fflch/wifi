@@ -1,0 +1,50 @@
+# -*- text -*-
+#
+# Módulo SQL do FreeRADIUS lendo a tabela `radcheck` mantida pelo Laravel.
+# Montado em /etc/freeradius/mods-enabled/sql (ver docker-compose.yml).
+#
+# O FreeRADIUS só faz SELECT. Quem insere/remove MACs é o Laravel
+# (App\Services\RadiusService).
+
+sql {
+	dialect = "mysql"
+	driver = "rlm_sql_mysql"
+
+	mysql {
+		warnings = auto
+	}
+
+	server = "$ENV{RADIUS_DB_HOST}"
+	port = 3306
+	login = "$ENV{RADIUS_DB_USER}"
+	password = "$ENV{RADIUS_DB_PASSWORD}"
+	radius_db = "$ENV{RADIUS_DB_NAME}"
+
+	authcheck_table = "radcheck"
+
+	# Não usamos grupos, NAS em banco, radreply, radacct nem radpostauth.
+	read_groups = no
+	read_profiles = no
+	read_clients = no
+
+	# O User-Name já chega normalizado (aabbccddeeff) pelo sites-enabled/default.
+	sql_user_name = "%{User-Name}"
+
+	authorize_check_query = "\
+		SELECT id, username, attribute, value, op \
+		FROM ${authcheck_table} \
+		WHERE username = '%{SQL-User-Name}' \
+		ORDER BY id"
+
+	pool {
+		# start = 0: não falha o boot se o MariaDB ainda não estiver de pé.
+		start = 0
+		min = 0
+		max = 10
+		spare = 3
+		uses = 0
+		retry_delay = 5
+		lifetime = 0
+		idle_timeout = 60
+	}
+}
