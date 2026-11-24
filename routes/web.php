@@ -19,3 +19,4 @@ Route::get('/aprovacoes/todas', [AprovacaoController::class, 'todas']); // admin
 Route::get('/aprovacoes/{solicitacao}', [AprovacaoController::class, 'show']);
 Route::patch('/aprovacoes/{solicitacao}/aprovar', [AprovacaoController::class, 'aprovar']);
 Route::patch('/aprovacoes/{solicitacao}/rejeitar', [AprovacaoController::class, 'rejeitar']);
+Route::delete('/aprovacoes/{solicitacao}', [AprovacaoController::class, 'destroy']); // admin

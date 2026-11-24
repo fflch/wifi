@@ -12,6 +12,12 @@
             <p class="muted">Seu dispositivo foi aprovado e já pode navegar na rede Wi-Fi de visitantes da FFLCH-USP.</p>
             <p class="muted small">Se ainda não navegar, desconecte e conecte de novo à rede Wi-Fi.</p>
 
+            <div class="alert alert-info">
+                Você será redirecionado para o site da FFLCH em
+                <strong id="contador">20</strong> segundos.
+                <br><a href="https://fflch.usp.br">Ir agora para fflch.usp.br</a>
+            </div>
+
         @elseif($solicitacao->status == 'rejeitado')
             <div class="icon bg-danger">&#10005;</div>
             <h1 class="text-danger">Solicitação Rejeitada</h1>
@@ -58,3 +64,24 @@
     </div>
 </div>
 @endsection
+
+@if($solicitacao->status == 'aprovado')
+@section('scripts')
+{{-- Sem JavaScript, o meta refresh redireciona do mesmo jeito --}}
+<noscript><meta http-equiv="refresh" content="20;url=https://fflch.usp.br"></noscript>
+<script>
+    (function () {
+        var restante = 20;
+        var contador = document.getElementById('contador');
+        var timer = setInterval(function () {
+            restante--;
+            contador.textContent = restante;
+            if (restante <= 0) {
+                clearInterval(timer);
+                window.location.href = 'https://fflch.usp.br';
+            }
+        }, 1000);
+    })();
+</script>
+@endsection
+@endif

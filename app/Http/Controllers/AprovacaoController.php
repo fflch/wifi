@@ -100,6 +100,24 @@ class AprovacaoController extends Controller
         return back()->with('alert-info', 'Solicitação de '.$solicitacao->visitante->nome.' rejeitada.');
     }
 
+    /**
+     * Exclui a solicitação. Somente admin (SENHAUNICA_ADMINS).
+     * Se estava aprovada, o MAC sai da radcheck. A exclusão fica na auditoria.
+     */
+    public function destroy(Solicitacao $solicitacao)
+    {
+        Gate::authorize('admin');
+
+        $visitante = $solicitacao->visitante;
+        $nome = $visitante->nome;
+
+        $solicitacao->statuses()->delete();
+        $solicitacao->delete();
+        $visitante->sincronizarRadius();
+
+        return redirect('/aprovacoes/todas')->with('alert-info', 'Solicitação de '.$nome.' excluída.');
+    }
+
     private function busca($query, $search)
     {
         $query->where('nome', 'like', "%{$search}%")
