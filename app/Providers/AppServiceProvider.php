@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Solicitacao;
 use Illuminate\Http\Middleware\TrustProxies;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -22,6 +23,9 @@ class AppServiceProvider extends ServiceProvider
         if (\App::environment('production')) {
             \URL::forceScheme('https');
         }
+
+        // Datas em português ("há 12 minutos"); o fuso fica em config/app.php (America/Sao_Paulo)
+        Date::setLocale(config('app.locale'));
 
         // Atrás do Traefik: confia no proxy para obter o IP real do cliente (TRUSTED_PROXIES)
         if (config('wifi.proxies_confiaveis')) {
