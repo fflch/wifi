@@ -17,8 +17,12 @@
     <p>Seu dispositivo já pode navegar. Se ainda não conseguir, desconecte e conecte de novo à rede Wi-Fi.</p>
 @elseif($devolvida)
     <p>Sua solicitação foi encaminhada para outra pessoa avaliar. Você receberá um novo e-mail quando houver uma decisão.</p>
+@elseif($linkReavaliacao)
+    <p>
+        Se você discorda, pode pedir uma segunda avaliação por este link
+        (pessoal, de uso único e válido por 7 dias; não o compartilhe):<br>
+        <a href="{{ $linkReavaliacao }}">Pedir segunda avaliação</a>
+    </p>
 @endif
-
-<p>Acompanhe em: <a href="{{ url('/solicitar/'.$solicitacao->id) }}">{{ url('/solicitar/'.$solicitacao->id) }}</a></p>
 
 <p>Faculdade de Filosofia, Letras e Ciências Humanas - USP</p>

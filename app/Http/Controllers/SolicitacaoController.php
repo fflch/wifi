@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SolicitacaoRequest;
+use App\Mail\SegundaAvaliacaoMail;
 use App\Models\Solicitacao;
 use App\Models\Visitante;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Telas do visitante (captive portal). Não exige login.
@@ -39,17 +41,8 @@ class SolicitacaoController extends Controller
         if ($visitante) {
             $solicitacao = $visitante->solicitacoes()->latest()->first();
 
+            // Se foi rejeitada, a segunda avaliação só pode ser pedida pelo link enviado por e-mail
             if ($solicitacao) {
-                // Rejeitado que volta ao portal: a solicitação é reaberta para outro autorizador
-                if ($solicitacao->status == 'rejeitado') {
-                    $rejeitadoPor = $solicitacao->user?->name;
-                    $solicitacao->user_id = null;
-                    $solicitacao->save();
-                    $solicitacao->setStatus('pendente', 'Reaberta pelo visitante');
-
-                    return redirect("/solicitar/{$solicitacao->id}")->with('reaberta', $rejeitadoPor ?? 'um servidor');
-                }
-
                 return redirect("/solicitar/{$solicitacao->id}");
             }
         }
@@ -92,5 +85,47 @@ class SolicitacaoController extends Controller
         return view('solicitacoes.show', [
             'solicitacao' => $solicitacao,
         ]);
+    }
+
+    /**
+     * Formulário de segunda avaliação. Só abre pelo link assinado enviado no e-mail de rejeição
+     * (middleware 'signed'). O link vale para uma única rejeição: o parâmetro "rejeicao"
+     * precisa ser o status atual; depois de usado (ou de outra decisão) deixa de valer.
+     */
+    public function reavaliacao(Request $request, Solicitacao $solicitacao)
+    {
+        return view('solicitacoes.reavaliacao', [
+            'solicitacao' => $solicitacao,
+            'valido' => $this->linkValido($request, $solicitacao),
+        ]);
+    }
+
+    public function pedirReavaliacao(Request $request, Solicitacao $solicitacao)
+    {
+        if (! $this->linkValido($request, $solicitacao)) {
+            return redirect("/solicitar/{$solicitacao->id}");
+        }
+
+        $request->validate([
+            'justificativa' => 'required|min:10|max:1000',
+        ], [
+            'justificativa.required' => 'Explique por que você pede uma segunda avaliação.',
+            'justificativa.min' => 'A justificativa deve ter pelo menos 10 caracteres.',
+        ]);
+
+        // Quem rejeitou continua em user_id e recebe o pedido por e-mail
+        $solicitacao->setStatus('pendente', $request->justificativa);
+
+        if ($solicitacao->user?->email) {
+            Mail::to($solicitacao->user->email)->queue(new SegundaAvaliacaoMail($solicitacao, $request->justificativa));
+        }
+
+        return redirect("/solicitar/{$solicitacao->id}");
+    }
+
+    private function linkValido(Request $request, Solicitacao $solicitacao)
+    {
+        return $solicitacao->status == 'rejeitado'
+            && $solicitacao->latestStatus()->id == $request->query('rejeicao');
     }
 }

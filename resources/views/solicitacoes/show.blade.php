@@ -30,7 +30,7 @@
             @if($solicitacao->mensagem())
                 <div class="info"><small>Motivo</small>{{ $solicitacao->mensagem() }}</div>
             @endif
-            <p class="muted small">Para tentar de novo, conecte-se à rede Wi-Fi visitante e abra o navegador.</p>
+            <p class="muted small">Se discordar, peça uma segunda avaliação pelo link enviado para o seu e-mail.</p>
 
         @else
             <div class="icon bg-warning">&#8987;</div>
@@ -39,13 +39,7 @@
                 <h1>Solicitação em Análise</h1>
                 <div class="alert alert-info">
                     Sua solicitação foi rejeitada por <strong>{{ $rejeicao['quem'] }}</strong>
-                    (motivo: <i>{{ $rejeicao['motivo'] }}</i>) e voltou para análise de outra pessoa.
-                </div>
-            @elseif(session('reaberta'))
-                <h1>Solicitação em Análise</h1>
-                <div class="alert alert-info">
-                    Sua solicitação anterior foi rejeitada por <strong>{{ session('reaberta') }}</strong>.
-                    Ela voltou para análise e aguarda a aprovação de outro servidor.
+                    (motivo: <i>{{ $rejeicao['motivo'] }}</i>) e voltou para análise.
                 </div>
             @else
                 <h1>Solicitação em Análise</h1>

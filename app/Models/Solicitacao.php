@@ -53,12 +53,15 @@ class Solicitacao extends Model implements Auditable
                 $acao = 'Solicitação criada';
                 $detalhe = 'Motivo: '.($audit->new_values['motivo'] ?? '');
             } elseif ($audit->event == 'status' && $depois == 'pendente') {
-                if ($antes == 'rejeitado') {
-                    $acao = $audit->user ? 'Devolvida para outra avaliação' : 'Reaberta pelo visitante';
+                if ($antes == 'rejeitado' && $audit->user) {
+                    $acao = 'Devolvida para outra avaliação';
+                    $detalhe = null;
+                } elseif ($antes == 'rejeitado') {
+                    $acao = 'Segunda avaliação pedida';   // pelo visitante, via link do e-mail
                 } else {
                     $acao = 'Enviada para análise';
+                    $detalhe = null;
                 }
-                $detalhe = null;
             } elseif ($audit->event == 'status' && $depois == 'aprovado') {
                 $acao = 'Aprovada';
             } elseif ($audit->event == 'status' && $depois == 'rejeitado') {
@@ -97,6 +100,16 @@ class Solicitacao extends Model implements Auditable
         }
 
         return $ultima ?? null;
+    }
+
+    /**
+     * Justificativa do visitante, se a solicitação está pendente por pedido de segunda avaliação
+     */
+    public function pedidoSegundaAvaliacao()
+    {
+        $ultimo = collect($this->historico())->last();
+
+        return $ultimo && $ultimo['acao'] == 'Segunda avaliação pedida' ? $ultimo['detalhe'] : null;
     }
 
     /**

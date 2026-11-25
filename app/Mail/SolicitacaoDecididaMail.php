@@ -22,7 +22,8 @@ class SolicitacaoDecididaMail extends Mailable implements ShouldQueue
         public string $decisao,       // 'aprovada' ou 'rejeitada'
         public string $quem,          // nome de quem decidiu
         public ?string $mensagem,     // opcional ao aprovar, obrigatória ao rejeitar
-        public bool $devolvida = false // rejeitada e devolvida para outra pessoa avaliar
+        public bool $devolvida = false,      // rejeitada e devolvida para outra pessoa avaliar
+        public ?string $linkReavaliacao = null // link assinado para pedir segunda avaliação
     ) {}
 
     public function envelope(): Envelope

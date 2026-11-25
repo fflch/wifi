@@ -7,6 +7,7 @@ use App\Models\Solicitacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 /**
  * Telas do autorizador: servidores e docentes (gate 'autorizador' no AppServiceProvider).
@@ -126,8 +127,18 @@ class AprovacaoController extends Controller
             $solicitacao->setStatus('pendente', 'Devolvida para outra pessoa avaliar');
         }
 
+        // Sem devolver: o visitante recebe um link assinado para pedir segunda avaliação,
+        // preso a esta rejeição (parâmetro "rejeicao") e válido por 7 dias
+        $link = null;
+        if (! $request->devolver) {
+            $link = url(URL::temporarySignedRoute('reavaliacao', now()->addDays(7), [
+                'solicitacao' => $solicitacao->id,
+                'rejeicao' => $solicitacao->latestStatus()->id,
+            ], absolute: false));
+        }
+
         Mail::to($solicitacao->visitante->email)->queue(
-            new SolicitacaoDecididaMail($solicitacao, 'rejeitada', auth()->user()->name, $request->mensagem, (bool) $request->devolver)
+            new SolicitacaoDecididaMail($solicitacao, 'rejeitada', auth()->user()->name, $request->mensagem, (bool) $request->devolver, $link)
         );
 
         if ($request->devolver) {

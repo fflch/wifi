@@ -30,6 +30,11 @@
                             <i>{{ $rejeicao['motivo'] }}</i>
                         </div>
                     @endif
+                    @if($pedido = $solicitacao->pedidoSegundaAvaliacao())
+                        <div class="alert alert-info small py-2">
+                            <b>Segunda avaliação pedida pelo visitante:</b> <i>{{ $pedido }}</i>
+                        </div>
+                    @endif
 
                     <p class="mb-3" style="font-size: 1.1rem;">
                         <i class="fas fa-quote-left text-muted"></i> {{ $solicitacao->motivo }}
