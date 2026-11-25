@@ -27,15 +27,30 @@
             @if($solicitacao->user)
                 <p class="muted">Rejeitada por <strong>{{ $solicitacao->user->name }}</strong>.</p>
             @endif
-            @if($solicitacao->mensagem())
-                <div class="info"><small>Motivo</small>{{ $solicitacao->mensagem() }}</div>
+            @if($solicitacao->rejeitadaAutomaticamente())
+                <p class="muted">Nenhum docente ou funcionário da FFLCH aprovou sua solicitação em 1 hora.</p>
+                <p class="muted small">
+                    Para reabrir a solicitação descrevendo de forma mais específica o motivo da visita, use o link
+                    enviado para o seu e-mail ou conecte-se à rede Wi-Fi de visitantes e abra o navegador.
+                    Ela volta para avaliação por mais 1 hora.
+                </p>
+            @else
+                @if($solicitacao->mensagem())
+                    <div class="info"><small>Motivo</small>{{ $solicitacao->mensagem() }}</div>
+                @endif
+                <p class="muted small">
+                    Se discordar, peça uma segunda avaliação pelo link enviado para o seu e-mail
+                    ou conectando-se à rede Wi-Fi de visitantes e abrindo o navegador.
+                </p>
             @endif
-            <p class="muted small">Se discordar, peça uma segunda avaliação pelo link enviado para o seu e-mail.</p>
 
         @else
             <div class="icon bg-warning">&#8987;</div>
 
-            @if($rejeicao = $solicitacao->ultimaRejeicao())
+            @if(($rejeicao = $solicitacao->ultimaRejeicao()) && $rejeicao['automatica'])
+                <h1>Solicitação em Análise</h1>
+                <p class="muted">Sua solicitação foi reaberta com o novo motivo e voltou para avaliação por mais 1 hora.</p>
+            @elseif($rejeicao)
                 <h1>Solicitação em Análise</h1>
                 <div class="alert alert-info">
                     Sua solicitação foi rejeitada por <strong>{{ $rejeicao['quem'] }}</strong>

@@ -5,6 +5,10 @@
 @section('content')
 <h1>Acesso à Rede Wi-Fi Visitante</h1>
 <p class="muted">Preencha os dados abaixo para solicitar acesso à rede sem fio para visitantes da FFLCH-USP.</p>
+<p class="muted small">
+    <strong>Tem vínculo com a USP</strong> (aluno, docente, funcionário, estagiário, pós-doc)? Não preencha:
+    conecte-se à rede <strong>eduroam</strong> com seu e-mail USP.
+</p>
 
 @if($errors->any())
     <div class="alert">
@@ -54,7 +58,7 @@
             <div class="field">
                 <label for="motivo">MOTIVO DA VISITA / ATIVIDADE <span class="req">*</span></label>
                 <textarea name="motivo" id="motivo" rows="3" placeholder="Descreva o motivo da sua visita ou atividade que realizará na FFLCH..." required>{{ old('motivo') }}</textarea>
-                <span class="hint">Mínimo 10 caracteres</span>
+                <span class="hint">Seja específico: com quem vai se encontrar, departamento, evento ou atividade. Sem aprovação em 1 hora, a solicitação é encerrada.</span>
             </div>
         </div>
 

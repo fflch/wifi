@@ -41,7 +41,12 @@ class SolicitacaoController extends Controller
         if ($visitante) {
             $solicitacao = $visitante->solicitacoes()->latest()->first();
 
-            // Se foi rejeitada, a segunda avaliação só pode ser pedida pelo link enviado por e-mail
+            // Rejeitada (por alguém ou automaticamente): vai direto para o pedido de reavaliação,
+            // pelo mesmo link assinado do e-mail, gerado na hora
+            if ($solicitacao && $solicitacao->status == 'rejeitado') {
+                return redirect($solicitacao->linkReavaliacao(absoluto: false));
+            }
+
             if ($solicitacao) {
                 return redirect("/solicitar/{$solicitacao->id}");
             }
@@ -103,6 +108,23 @@ class SolicitacaoController extends Controller
     public function pedirReavaliacao(Request $request, Solicitacao $solicitacao)
     {
         if (! $this->linkValido($request, $solicitacao)) {
+            return redirect("/solicitar/{$solicitacao->id}");
+        }
+
+        // Ninguém avaliou em 1 hora: o visitante reabre com um motivo mais específico
+        // e a solicitação volta para a fila por mais 1 hora
+        if ($solicitacao->rejeitadaAutomaticamente()) {
+            $request->validate([
+                'motivo' => 'required|min:10|max:500',
+            ], [
+                'motivo.required' => 'Descreva o motivo da sua visita.',
+                'motivo.min' => 'O motivo deve ter pelo menos 10 caracteres.',
+            ]);
+
+            $solicitacao->motivo = $request->motivo;
+            $solicitacao->save();
+            $solicitacao->setStatus('pendente', Solicitacao::REABERTA_NOVO_MOTIVO);
+
             return redirect("/solicitar/{$solicitacao->id}");
         }
 

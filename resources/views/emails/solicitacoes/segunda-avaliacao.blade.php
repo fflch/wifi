@@ -16,4 +16,6 @@
     <a href="{{ url('/aprovacoes/'.$solicitacao->id) }}">{{ url('/aprovacoes/'.$solicitacao->id) }}</a>
 </p>
 
+@include('emails.solicitacoes._vinculo')
+
 <p>Faculdade de Filosofia, Letras e Ciências Humanas - USP</p>

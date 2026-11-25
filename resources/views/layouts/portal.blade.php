@@ -96,6 +96,7 @@
         .alert { background: #f8d7da; border: 1px solid #f5c2c7; color: #842029; border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; }
         .alert-info { background: #fff3cd; border-color: #ffe69c; color: #664d03; }
         .alert ul { margin: 4px 0 0; padding-left: 20px; }
+        .vinculo { background: #e9edf6; border-left: 4px solid var(--azul); border-radius: 6px; padding: 12px 16px; margin-bottom: 16px; font-size: .9rem; }
     </style>
 </head>
 <body>
@@ -108,6 +109,11 @@
 
     <main>
         <div class="wrap">
+            <div class="vinculo">
+                Esta rede é somente para <strong>visitantes sem vínculo com a Universidade de São Paulo</strong>.
+                Alunos, docentes, funcionários e demais pessoas com vínculo USP devem usar a rede <strong>eduroam</strong>.
+            </div>
+
             @yield('content')
         </div>
     </main>

@@ -20,13 +20,16 @@
                     <small class="text-muted">{{ $solicitacao->visitante->email }}</small>
                 </td>
                 <td><code>{{ $solicitacao->visitante->mac }}</code></td>
-                <td>{{ $solicitacao->visitante->documento_mascarado }}</td>
+                <td>{{ $solicitacao->visitante->documento }}</td>
                 <td>{{ Str::limit($solicitacao->motivo, 80) }}</td>
                 <td><span class="badge badge-{{ $solicitacao->cor() }}">{{ $solicitacao->status }}</span></td>
                 <td>
                     @if($solicitacao->user)
                         {{ $solicitacao->user->name }}<br>
                         <small class="text-muted">{{ $solicitacao->latestStatus()->created_at->format('d/m/Y H:i') }}</small>
+                    @elseif($solicitacao->rejeitadaAutomaticamente())
+                        <span class="text-muted">Automático</span><br>
+                        <small class="text-muted">sem avaliação em 1 hora</small>
                     @else
                         <span class="text-muted">-</span>
                     @endif

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 use OwenIt\Auditing\Contracts\Auditable;
 use Spatie\ModelStatus\HasStatuses;
 
@@ -19,6 +20,13 @@ class Solicitacao extends Model implements Auditable
     use \OwenIt\Auditing\Auditable;
 
     protected $table = 'solicitacoes';
+
+    // Pendente há mais que isso é rejeitada automaticamente (app:rejeita-pendentes)
+    const MINUTOS_PARA_AVALIAR = 60;
+
+    const REJEICAO_AUTOMATICA = 'Nenhum docente ou funcionário avaliou a solicitação em 1 hora';
+
+    const REABERTA_NOVO_MOTIVO = 'Reaberta pelo visitante com novo motivo';
 
     // Quem aprovou/rejeitou já fica registrado no audit de status (ver AppServiceProvider)
     protected $auditExclude = ['user_id'];
@@ -53,7 +61,10 @@ class Solicitacao extends Model implements Auditable
                 $acao = 'Solicitação criada';
                 $detalhe = 'Motivo: '.($audit->new_values['motivo'] ?? '');
             } elseif ($audit->event == 'status' && $depois == 'pendente') {
-                if ($antes == 'rejeitado' && $audit->user) {
+                if ($detalhe == self::REABERTA_NOVO_MOTIVO) {
+                    $acao = 'Reaberta com novo motivo';
+                    $detalhe = null;
+                } elseif ($antes == 'rejeitado' && $audit->user) {
                     $acao = 'Devolvida para outra avaliação';
                     $detalhe = null;
                 } elseif ($antes == 'rejeitado') {
@@ -64,8 +75,13 @@ class Solicitacao extends Model implements Auditable
                 }
             } elseif ($audit->event == 'status' && $depois == 'aprovado') {
                 $acao = 'Aprovada';
+            } elseif ($audit->event == 'status' && $depois == 'rejeitado' && $detalhe == self::REJEICAO_AUTOMATICA) {
+                $acao = 'Rejeitada automaticamente';
             } elseif ($audit->event == 'status' && $depois == 'rejeitado') {
                 $acao = $antes == 'aprovado' ? 'Aprovação revogada' : 'Rejeitada';
+            } elseif (isset($audit->new_values['motivo'])) {
+                $acao = 'Motivo alterado';
+                $detalhe = 'Novo motivo: '.$audit->new_values['motivo'];
             } else {
                 $acao = 'Dados alterados';
                 $detalhe = implode(', ', array_keys($audit->new_values));
@@ -77,7 +93,7 @@ class Solicitacao extends Model implements Auditable
 
             $historico[] = [
                 'data' => $audit->created_at,
-                'quem' => $audit->user?->name ?? 'Visitante',
+                'quem' => $audit->user?->name ?? ($acao == 'Rejeitada automaticamente' ? 'Sistema' : 'Visitante'),
                 'acao' => $acao,
                 'cor' => $depois == 'aprovado' ? 'success' : ($depois == 'rejeitado' ? 'danger' : 'secondary'),
                 'detalhe' => $detalhe,
@@ -94,8 +110,13 @@ class Solicitacao extends Model implements Auditable
     public function ultimaRejeicao()
     {
         foreach ($this->historico() as $item) {
-            if ($item['acao'] == 'Rejeitada' || $item['acao'] == 'Aprovação revogada') {
-                $ultima = ['quem' => $item['quem'], 'motivo' => $item['detalhe'], 'data' => $item['data']];
+            if (in_array($item['acao'], ['Rejeitada', 'Aprovação revogada', 'Rejeitada automaticamente'])) {
+                $ultima = [
+                    'quem' => $item['quem'],
+                    'motivo' => $item['detalhe'],
+                    'data' => $item['data'],
+                    'automatica' => $item['acao'] == 'Rejeitada automaticamente',
+                ];
             }
         }
 
@@ -110,6 +131,30 @@ class Solicitacao extends Model implements Auditable
         $ultimo = collect($this->historico())->last();
 
         return $ultimo && $ultimo['acao'] == 'Segunda avaliação pedida' ? $ultimo['detalhe'] : null;
+    }
+
+    /**
+     * Rejeitada pelo sistema por ninguém ter avaliado a tempo
+     */
+    public function rejeitadaAutomaticamente()
+    {
+        return $this->status == 'rejeitado' && $this->mensagem() == self::REJEICAO_AUTOMATICA;
+    }
+
+    /**
+     * Link assinado (7 dias, uso único) para o visitante pedir segunda avaliação
+     * ou reabrir com novo motivo. Preso à rejeição atual pelo parâmetro "rejeicao".
+     */
+    public function linkReavaliacao($absoluto = true)
+    {
+        $link = URL::temporarySignedRoute('reavaliacao', now()->addDays(7), [
+            'solicitacao' => $this->id,
+            // Consulta o banco: a relação 'statuses' pode estar carregada de antes da rejeição
+            'rejeicao' => $this->statuses()->first()->id,
+        ], absolute: false);
+
+        // Absoluto para o e-mail; relativo para redirecionar no portal (mantém o host da requisição)
+        return $absoluto ? url($link) : $link;
     }
 
     /**

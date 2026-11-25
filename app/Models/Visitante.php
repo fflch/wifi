@@ -50,23 +50,6 @@ class Visitante extends Model implements Auditable
     }
 
     /**
-     * Mostra só o começo e o fim do CPF: 123.***.***-00
-     */
-    protected function documentoMascarado(): Attribute
-    {
-        return Attribute::make(
-            get: function () {
-                $numeros = preg_replace('/[^0-9]/', '', $this->documento);
-                if (strlen($numeros) == 11) {
-                    return substr($numeros, 0, 3).'.***.***-'.substr($numeros, -2);
-                }
-
-                return $this->documento;
-            }
-        );
-    }
-
-    /**
      * Mantém a tabela radcheck do FreeRADIUS em dia:
      * se o visitante tem alguma solicitação aprovada, o MAC entra; senão, sai.
      */

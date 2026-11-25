@@ -10,7 +10,7 @@
 
 <p>
     E-mail: {{ $solicitacao->visitante->email }} <br>
-    Documento: {{ $solicitacao->visitante->documento_mascarado }} <br>
+    Documento: {{ $solicitacao->visitante->documento }} <br>
     Telefone: {{ $solicitacao->visitante->telefone ?? '-' }} <br>
     MAC: <code>{{ $solicitacao->visitante->mac }}</code> <br>
     Motivo: {{ $solicitacao->motivo }} <br>

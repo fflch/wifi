@@ -21,8 +21,11 @@
     <p>
         Se você discorda, pode pedir uma segunda avaliação por este link
         (pessoal, de uso único e válido por 7 dias; não o compartilhe):<br>
-        <a href="{{ $linkReavaliacao }}">Pedir segunda avaliação</a>
+        <a href="{{ $linkReavaliacao }}">Pedir segunda avaliação</a><br>
+        <small>Você também pode pedir conectando-se à rede Wi-Fi de visitantes da FFLCH e abrindo o navegador.</small>
     </p>
 @endif
+
+@include('emails.solicitacoes._vinculo')
 
 <p>Faculdade de Filosofia, Letras e Ciências Humanas - USP</p>

@@ -15,7 +15,10 @@
             <div class="card h-100 border-warning shadow-sm">
                 <div class="card-header bg-warning d-flex justify-content-between">
                     <strong>Nova solicitação</strong>
-                    <span title="{{ $solicitacao->created_at->format('d/m/Y H:i') }}">{{ $solicitacao->created_at->diffForHumans() }}</span>
+                    <span title="{{ $solicitacao->created_at->format('d/m/Y H:i') }}">
+                        {{ $solicitacao->created_at->diffForHumans() }}
+                        &middot; encerra às {{ $solicitacao->latestStatus()->created_at->addMinutes(\App\Models\Solicitacao::MINUTOS_PARA_AVALIAR)->format('H:i') }}
+                    </span>
                 </div>
 
                 <div class="card-body">
@@ -26,8 +29,13 @@
 
                     @if($rejeicao = $solicitacao->ultimaRejeicao())
                         <div class="alert alert-secondary small py-2">
-                            Já rejeitada por <b>{{ $rejeicao['quem'] }}</b> em {{ $rejeicao['data']->format('d/m/Y H:i') }}:
-                            <i>{{ $rejeicao['motivo'] }}</i>
+                            @if($rejeicao['automatica'])
+                                Já foi encerrada em {{ $rejeicao['data']->format('d/m/Y H:i') }} por ninguém ter avaliado em 1 hora;
+                                o visitante reabriu com novo motivo.
+                            @else
+                                Já rejeitada por <b>{{ $rejeicao['quem'] }}</b> em {{ $rejeicao['data']->format('d/m/Y H:i') }}:
+                                <i>{{ $rejeicao['motivo'] }}</i>
+                            @endif
                         </div>
                     @endif
                     @if($pedido = $solicitacao->pedidoSegundaAvaliacao())
@@ -41,7 +49,7 @@
                     </p>
 
                     <small class="text-muted">
-                        Documento: {{ $solicitacao->visitante->documento_mascarado }} <br>
+                        Documento: {{ $solicitacao->visitante->documento }} <br>
                         @if($solicitacao->visitante->telefone)
                             Telefone: {{ $solicitacao->visitante->telefone }} <br>
                         @endif
