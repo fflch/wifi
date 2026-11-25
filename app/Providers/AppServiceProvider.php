@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Solicitacao;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
     {
         if (\App::environment('production')) {
             \URL::forceScheme('https');
+        }
+
+        // Atrás do Traefik: confia no proxy para obter o IP real do cliente (TRUSTED_PROXIES)
+        if (config('wifi.proxies_confiaveis')) {
+            TrustProxies::at(config('wifi.proxies_confiaveis'));
         }
 
         // Quem pode aprovar: servidores e docentes da unidade (gates do senhaunica-socialite)

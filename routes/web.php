@@ -3,13 +3,14 @@
 use App\Http\Controllers\AprovacaoController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\SolicitacaoController;
+use App\Http\Middleware\SomenteRedeWifi;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [IndexController::class, 'index']);
 
-// Visitante (captive portal, sem login)
-Route::get('/solicitar', [SolicitacaoController::class, 'create']);
-Route::post('/solicitar', [SolicitacaoController::class, 'store']);
+// Visitante (captive portal, sem login). Só de dentro da rede Wi-Fi (WIFI_REDES_PERMITIDAS)
+Route::get('/solicitar', [SolicitacaoController::class, 'create'])->middleware(SomenteRedeWifi::class);
+Route::post('/solicitar', [SolicitacaoController::class, 'store'])->middleware(SomenteRedeWifi::class);
 Route::get('/solicitar/{solicitacao}', [SolicitacaoController::class, 'show']);
 
 // Segunda avaliação: só pelo link assinado do e-mail de rejeição.
