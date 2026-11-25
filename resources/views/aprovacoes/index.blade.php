@@ -6,6 +6,7 @@
 <h3>Aprovações Pendentes</h3>
 <p class="text-muted">Visitantes que solicitaram acesso à rede Wi-Fi e aguardam autorização.</p>
 
+@include('aprovacoes._erros')
 @include('aprovacoes._busca')
 
 <div class="row">
@@ -23,6 +24,13 @@
                     </h4>
                     <p class="text-muted mb-3">{{ $solicitacao->visitante->email }}</p>
 
+                    @if($rejeicao = $solicitacao->ultimaRejeicao())
+                        <div class="alert alert-secondary small py-2">
+                            Já rejeitada por <b>{{ $rejeicao['quem'] }}</b> em {{ $rejeicao['data']->format('d/m/Y H:i') }}:
+                            <i>{{ $rejeicao['motivo'] }}</i>
+                        </div>
+                    @endif
+
                     <p class="mb-3" style="font-size: 1.1rem;">
                         <i class="fas fa-quote-left text-muted"></i> {{ $solicitacao->motivo }}
                     </p>
@@ -37,26 +45,7 @@
                 </div>
 
                 <div class="card-footer bg-white">
-                    <div class="row">
-                        <div class="col-6">
-                            <form method="POST" action="/aprovacoes/{{ $solicitacao->id }}/aprovar">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-success btn-lg btn-block" onclick="return confirm('Liberar o acesso de {{ $solicitacao->visitante->nome }}?');">
-                                    <i class="fas fa-check"></i> Aprovar
-                                </button>
-                            </form>
-                        </div>
-                        <div class="col-6">
-                            <form method="POST" action="/aprovacoes/{{ $solicitacao->id }}/rejeitar">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-outline-danger btn-lg btn-block" onclick="return confirm('Tem certeza que deseja rejeitar {{ $solicitacao->visitante->nome }}?');">
-                                    <i class="fas fa-times"></i> Rejeitar
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                    @include('aprovacoes._decisao')
                 </div>
             </div>
         </div>

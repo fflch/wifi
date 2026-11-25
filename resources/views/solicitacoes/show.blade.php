@@ -10,6 +10,12 @@
             <div class="icon bg-success">&#10003;</div>
             <h1 class="text-success">Acesso Liberado!</h1>
             <p class="muted">Seu acesso à rede Wi-Fi de visitantes da FFLCH-USP foi autorizado.</p>
+            @if($solicitacao->user)
+                <p class="muted">Aprovado por <strong>{{ $solicitacao->user->name }}</strong>.</p>
+            @endif
+            @if($solicitacao->mensagem())
+                <div class="info"><small>Mensagem</small>{{ $solicitacao->mensagem() }}</div>
+            @endif
 
             <div class="alert alert-info">
                 <strong>Desligue e ligue o Wi-Fi</strong> do seu dispositivo para conectar na internet.
@@ -21,12 +27,21 @@
             @if($solicitacao->user)
                 <p class="muted">Rejeitada por <strong>{{ $solicitacao->user->name }}</strong>.</p>
             @endif
+            @if($solicitacao->mensagem())
+                <div class="info"><small>Motivo</small>{{ $solicitacao->mensagem() }}</div>
+            @endif
             <p class="muted small">Para tentar de novo, conecte-se à rede Wi-Fi visitante e abra o navegador.</p>
 
         @else
             <div class="icon bg-warning">&#8987;</div>
 
-            @if(session('reaberta'))
+            @if($rejeicao = $solicitacao->ultimaRejeicao())
+                <h1>Solicitação em Análise</h1>
+                <div class="alert alert-info">
+                    Sua solicitação foi rejeitada por <strong>{{ $rejeicao['quem'] }}</strong>
+                    (motivo: <i>{{ $rejeicao['motivo'] }}</i>) e voltou para análise de outra pessoa.
+                </div>
+            @elseif(session('reaberta'))
                 <h1>Solicitação em Análise</h1>
                 <div class="alert alert-info">
                     Sua solicitação anterior foi rejeitada por <strong>{{ session('reaberta') }}</strong>.

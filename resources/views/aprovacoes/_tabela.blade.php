@@ -32,7 +32,8 @@
                     @endif
                 </td>
                 <td class="text-nowrap">
-                    @include('aprovacoes._botoes')
+                    <a href="/aprovacoes/{{ $solicitacao->id }}" class="btn btn-outline-primary btn-sm">Abrir</a>
+                    @include('aprovacoes._excluir')
                 </td>
             </tr>
         @empty

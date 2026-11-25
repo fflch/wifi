@@ -53,7 +53,12 @@ class Solicitacao extends Model implements Auditable
                 $acao = 'Solicitação criada';
                 $detalhe = 'Motivo: '.($audit->new_values['motivo'] ?? '');
             } elseif ($audit->event == 'status' && $depois == 'pendente') {
-                $acao = $antes == 'rejeitado' ? 'Reaberta pelo visitante' : 'Enviada para análise';
+                if ($antes == 'rejeitado') {
+                    $acao = $audit->user ? 'Devolvida para outra avaliação' : 'Reaberta pelo visitante';
+                } else {
+                    $acao = 'Enviada para análise';
+                }
+                $detalhe = null;
             } elseif ($audit->event == 'status' && $depois == 'aprovado') {
                 $acao = 'Aprovada';
             } elseif ($audit->event == 'status' && $depois == 'rejeitado') {
@@ -78,6 +83,28 @@ class Solicitacao extends Model implements Auditable
         }
 
         return $historico;
+    }
+
+    /**
+     * Última rejeição (quem, motivo e data), para avisar quem vai reavaliar.
+     */
+    public function ultimaRejeicao()
+    {
+        foreach ($this->historico() as $item) {
+            if ($item['acao'] == 'Rejeitada' || $item['acao'] == 'Aprovação revogada') {
+                $ultima = ['quem' => $item['quem'], 'motivo' => $item['detalhe'], 'data' => $item['data']];
+            }
+        }
+
+        return $ultima ?? null;
+    }
+
+    /**
+     * Mensagem da última decisão (motivo da rejeição ou mensagem da aprovação)
+     */
+    public function mensagem()
+    {
+        return $this->latestStatus()?->reason;
     }
 
     /**

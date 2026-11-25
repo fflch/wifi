@@ -21,7 +21,15 @@
     @endif
 </p>
 
-<p>@include('aprovacoes._botoes')</p>
+@include('aprovacoes._erros')
+@if(Gate::allows('rejeitar', $solicitacao) || ($solicitacao->status != 'aprovado' && Gate::allows('autorizador')))
+    <div class="card mb-3" style="max-width: 600px;">
+        <div class="card-body">
+            @include('aprovacoes._decisao')
+        </div>
+    </div>
+@endif
+@include('aprovacoes._excluir')
 
 <h5 class="mt-4">Histórico</h5>
 <p class="text-muted small">Registrado pela auditoria (owen-it/laravel-auditing).</p>

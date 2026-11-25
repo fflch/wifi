@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SolicitacaoDecididaMail;
 use App\Models\Solicitacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Telas do autorizador: servidores e docentes (gate 'autorizador' no AppServiceProvider).
@@ -75,27 +77,62 @@ class AprovacaoController extends Controller
         ]);
     }
 
-    public function aprovar(Solicitacao $solicitacao)
+    /**
+     * Aprova. A mensagem ao visitante é opcional.
+     */
+    public function aprovar(Request $request, Solicitacao $solicitacao)
     {
         Gate::authorize('autorizador');
 
+        if ($solicitacao->status == 'aprovado') {
+            return back()->with('alert-info', 'Esta solicitação já está aprovada.');
+        }
+
+        $request->validate([
+            'mensagem' => 'nullable|max:1000',
+        ]);
+
         $solicitacao->user_id = auth()->user()->id;
         $solicitacao->save();
-        $solicitacao->setStatus('aprovado');
+        $solicitacao->setStatus('aprovado', $request->mensagem);
+
+        Mail::to($solicitacao->visitante->email)->queue(
+            new SolicitacaoDecididaMail($solicitacao, 'aprovada', auth()->user()->name, $request->mensagem)
+        );
 
         return back()->with('alert-success', 'Acesso liberado para '.$solicitacao->visitante->nome.'.');
     }
 
     /**
-     * Rejeita uma pendente ou revoga uma aprovação (regra no gate 'rejeitar')
+     * Rejeita (o motivo é obrigatório). Regra de quem pode no gate 'rejeitar'.
+     * Com "devolver", a solicitação volta para /aprovacoes para outra pessoa avaliar.
      */
-    public function rejeitar(Solicitacao $solicitacao)
+    public function rejeitar(Request $request, Solicitacao $solicitacao)
     {
         Gate::authorize('rejeitar', $solicitacao);
 
+        $request->validate([
+            'mensagem' => 'required|min:5|max:1000',
+        ], [
+            'mensagem.required' => 'Informe o motivo da rejeição.',
+            'mensagem.min' => 'O motivo da rejeição deve ter pelo menos 5 caracteres.',
+        ]);
+
         $solicitacao->user_id = auth()->user()->id;
         $solicitacao->save();
-        $solicitacao->setStatus('rejeitado');
+        $solicitacao->setStatus('rejeitado', $request->mensagem);
+
+        if ($request->devolver) {
+            $solicitacao->setStatus('pendente', 'Devolvida para outra pessoa avaliar');
+        }
+
+        Mail::to($solicitacao->visitante->email)->queue(
+            new SolicitacaoDecididaMail($solicitacao, 'rejeitada', auth()->user()->name, $request->mensagem, (bool) $request->devolver)
+        );
+
+        if ($request->devolver) {
+            return back()->with('alert-info', 'Solicitação de '.$solicitacao->visitante->nome.' rejeitada e devolvida para outra pessoa avaliar.');
+        }
 
         return back()->with('alert-info', 'Solicitação de '.$solicitacao->visitante->nome.' rejeitada.');
     }
